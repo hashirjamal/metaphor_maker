@@ -3,12 +3,18 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useOutsideClick } from "@/hooks/use-outside-click";
-import { XIcon } from "lucide-react";
+import { ArrowLeftCircle, ArrowRightCircle, MoveLeftIcon, MoveRightIcon, XIcon } from "lucide-react";
+import { Card, CardContent } from "./ui/card";
+import { Badge } from "./ui/badge";
 
-export default function ExpandableCardDemo() {
+export default function ExpandableCardDemo({metaphorContent}:{
+  metaphorContent:Content[]
+}) {
   const [active, setActive] = useState<any>(
     null
   );
+
+  const [currentModalSec, setCurrentModalSec] = useState<Number>(1)
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
 
@@ -63,11 +69,14 @@ export default function ExpandableCardDemo() {
     <motion.div
       layoutId={`card-${active.title}-${id}`}
       ref={ref}
-      className="w-full max-w-[500px] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-6 flex flex-col gap-6 overflow-y-auto max-h-[90vh]"
+      className="w-full max-w-[500px] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[90vh]"
     >
+<span className="flex justify-between gap-2">
+<button disabled={currentModalSec==1} onClick={()=>setCurrentModalSec(1)}><ArrowLeftCircle className="h-6 w-6  "/></button>
+<button disabled={currentModalSec==2} onClick={()=>setCurrentModalSec(2)}><ArrowRightCircle className="h-6 w-6"/> </button>
+</span>
       {/* Algorithm Section */}
-      {/* Algorithm Section */}
-<div>
+{currentModalSec==1?<div>
   <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-1">
     Algorithm
   </h3>
@@ -77,11 +86,11 @@ export default function ExpandableCardDemo() {
   <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
     {active.algoSteps}
   </p>
-</div>
+</div>:null}
 
 
       {/* Metaphor Section */}
-      <div>
+     {currentModalSec==2 ? <div>
         <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-1">
           Metaphor
         </h3>
@@ -97,7 +106,7 @@ export default function ExpandableCardDemo() {
         >
           {active.metaphorDesc}
         </motion.p>
-      </div>
+      </div> : null}
 
       {/* Regenerate and Delete Button */}
       <div className="flex gap-2">
@@ -124,7 +133,7 @@ export default function ExpandableCardDemo() {
 ) : null}
 
       </AnimatePresence>
-      <ul className="max-w-2xl mx-auto w-full gap-4">
+      <ul className="max-w-2xl mx-auto w-full gap-14">
         {/* {cards.map((card, index) => (
           <motion.div
             layoutId={`card-${card.title}-${id}`}
@@ -167,43 +176,45 @@ export default function ExpandableCardDemo() {
         ))} */}
         {metaphorContent.map((card, index) => (
           <motion.div
-            layoutId={`card-${card.algoTitle}-${id}`}
-            key={`card-${card.algoTitle}-${id}`}
-            onClick={() => setActive(card)}
-            className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer"
-          >
-            <div className="flex gap-4 flex-col md:flex-row ">
-              <motion.div layoutId={`image-${card.algoTitle}-${id}`}>
-                <img
-                  width={100}
-                  height={100}
-                  src={card.src}
-                  alt={card.algoTitle}
-                  className="h-40 w-40 md:h-14 md:w-14 rounded-lg object-cover object-top"
-                />
-              </motion.div>
-              <div className="">
-                <motion.h3
-                  layoutId={`title-${card.algoTitle}-${id}`}
-                  className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left"
-                >
-                  {card.algoTitle}
-                </motion.h3>
-                <motion.p
-                  layoutId={`description-${card.algoSteps}-${id}`}
-                  className="text-neutral-600 dark:text-neutral-400 text-center md:text-left"
-                >
-                  {card.metaphorName}
-                </motion.p>
+          key={card.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          whileHover={{ y: -5 }}
+          className="group my-4"
+          onClick={()=>setActive(card)}
+        >
+          <Card className="h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-start justify-between">
+               <div className="flex items-center gap-4">
+  <img src={card.src} alt="" className="h-16 w-20 rounded-md object-cover" />
+  <div>
+    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600">
+      {card.algoTitle}
+    </h3>
+    <Badge
+      variant="secondary"
+      className="mt-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+    >
+      Machine Learning
+    </Badge>
+  </div>
+</div>
+
               </div>
-            </div>
-            <motion.button
-              layoutId={`button-${card.algoTitle}-${id}`}
-              className="px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-gray-500 hover:text-white text-black mt-4 md:mt-0"
-            >
-              View
-            </motion.button>
-          </motion.div>
+
+              <div className="space-y-3">
+                <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-lg border border-blue-100 dark:border-blue-800/30">
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Metaphor:</p>
+                  <p className="text-blue-700 dark:text-blue-200 font-medium">{card.metaphorName}</p>
+                </div>
+
+                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{card.metaphorDesc}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
         ))}
       </ul>
     </>
@@ -357,27 +368,3 @@ const cards = [
     },
   },
 ];
-
-const metaphorContent = [
-  {
-  algoTitle:"Bubble Sort",
-  algoSteps:"Step1 Sort array, shift left, find max",
-  metaphorName: "Bucket of Water",
-  metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s"
-},
-  {
-  algoTitle:"Bubble Sort",
-  algoSteps:"Step1 Sort array, shift left, find max",
-  metaphorName: "Bucket of Water",
-  metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s"
-},
-  {
-  algoTitle:"Bubble Sort",
-  algoSteps:"Step1 Sort array, shift left, find max",
-  metaphorName: "Bucket of Water",
-  metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s"
-},
-]
