@@ -69,7 +69,7 @@ export default function ExpandableCardDemo({metaphorContent}:{
     <motion.div
       layoutId={`card-${active.title}-${id}`}
       ref={ref}
-      className="w-full max-w-[500px] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[90vh]"
+      className="w-full max-w-[500px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[90vh]"
     >
 <span className="flex justify-between gap-2">
 <button disabled={currentModalSec==1} onClick={()=>setCurrentModalSec(1)}><ArrowLeftCircle className="h-6 w-6  "/></button>

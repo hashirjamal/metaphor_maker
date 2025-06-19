@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { motion } from "motion/react"
-import { handleAgent } from "@/actions"
+import { handleAgent } from "@/actions/agentRunner"
 
 function Page() {
   const [searchValue, setSearchValue] = useState("")
@@ -22,6 +22,7 @@ function Page() {
 
   const handleSubmit = async (userPrompt:string)=>{
    console.log("Submitting")
+   setDialogInput("")
   const res = await handleAgent(userPrompt)
   if(!res) return
   setData(p=>[res,...p])
