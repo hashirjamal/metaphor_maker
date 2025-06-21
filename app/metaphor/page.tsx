@@ -2,7 +2,7 @@
 
 import ExpandableCardDemo from "@/components/expandable-card-demo-standard"
 import { PlusIcon, Sparkles } from "lucide-react"
-import { useState, useTransition } from "react"
+import { SetStateAction, useEffect, useState, useTransition } from "react"
 import {
   Dialog,
   DialogContent,
@@ -13,19 +13,42 @@ import {
 } from "@/components/ui/dialog"
 import { motion } from "motion/react"
 import { handleAgent } from "@/actions/agentRunner"
+import { getMetaphorsOfUser } from "@/actions/crud"
 
 function Page() {
   const [searchValue, setSearchValue] = useState("")
   const [dialogInput, setDialogInput] = useState("")
   const [isPending,startTransition] = useTransition()
-  const [data,setData] = useState<Content[]>(metaphorContent)
+  const [data,setData] = useState<any>(metaphorContent)
+
+
+  useEffect(()=>{
+    const get = async()=>{
+      const res = await getMetaphorsOfUser("abc123")
+      console.log(res)
+      if(!res) return
+      const dt = res?.map((v)=>{
+        return { 
+            _id:v._id,
+  algoTitle:v.algoTitle,
+  algoSteps:v.algoSteps,
+  metaphorName:v.metaphorName,
+  metaphorDesc:v.metaphorDesc,
+  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+  userId:v.userId,
+        }
+      })
+      setData(dt)
+    }
+    get()
+  },[])
 
   const handleSubmit = async (userPrompt:string)=>{
    console.log("Submitting")
    setDialogInput("")
   const res = await handleAgent(userPrompt)
   if(!res) return
-  setData(p=>[res,...p])
+  setData((p: any)=>[res,...p])
   }
 
   
@@ -139,27 +162,30 @@ export default Page
 
 const metaphorContent:Content[] = [
   {
-    id:"1",
+    _id:"1",
   algoTitle:"Bubble Sort",
   algoSteps:"Step1 Sort array, shift left, find max",
   metaphorName: "Bucket of Water",
   metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s"
+  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+  userId:""
 },
   {
-    id:"2",
+    _id:"2",
   algoTitle:"Bubble Sort",
   algoSteps:"Step1 Sort array, shift left, find max",
   metaphorName: "Bucket of Water",
   metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s"
+  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+  userId:""
 },
   {
-    id:"3",
+    _id:"3",
   algoTitle:"Bubble Sort",
   algoSteps:"Step1 Sort array, shift left, find max",
   metaphorName: "Bucket of Water",
   metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s"
+  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+  userId:""
 },
 ]
