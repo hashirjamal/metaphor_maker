@@ -7,8 +7,8 @@ import { ArrowLeftCircle, ArrowRightCircle, MoveLeftIcon, MoveRightIcon, XIcon }
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
 
-export default function ExpandableCardDemo({metaphorContent}:{
-  metaphorContent:Content[]
+export default function ExpandableCardDemo({ metaphorContent }: {
+  metaphorContent: Content[]
 }) {
   const [active, setActive] = useState<any>(
     null
@@ -50,87 +50,87 @@ export default function ExpandableCardDemo({metaphorContent}:{
         )}
       </AnimatePresence>
       <AnimatePresence>
-       {active && typeof active === "object" ? (
-  <div className="fixed inset-0 grid place-items-center z-[100] bg-black/40 backdrop-blur-sm">
-    {/* Close Button */}
-    <motion.button
-      key={`button-${active.title}-${id}`}
-      layout
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.05 } }}
-      className="absolute top-4 right-4 z-10 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full p-2 shadow hover:bg-gray-100 dark:hover:bg-neutral-700 transition lg:hidden"
-      onClick={() => setActive(null)}
-    >
-      <XIcon  className="w-4 h-4"/>
-          </motion.button>
+        {active && typeof active === "object" ? (
+          <div className="fixed inset-0 grid place-items-center z-[100] bg-black/40 backdrop-blur-sm">
+            {/* Close Button */}
+            <motion.button
+              key={`button-${active.title}-${id}`}
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.05 } }}
+              className="absolute top-4 right-4 z-10 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full p-2 shadow hover:bg-gray-100 dark:hover:bg-neutral-700 transition lg:hidden"
+              onClick={() => setActive(null)}
+            >
+              <XIcon className="w-4 h-4" />
+            </motion.button>
 
-    {/* Modal Content */}
-    <motion.div
-      layoutId={`card-${active.title}-${id}`}
-      ref={ref}
-      className="w-full max-w-[500px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[90vh]"
-    >
-<span className="flex justify-between gap-2">
-<button disabled={currentModalSec==1} onClick={()=>setCurrentModalSec(1)}><ArrowLeftCircle className="h-6 w-6  "/></button>
-<button disabled={currentModalSec==2} onClick={()=>setCurrentModalSec(2)}><ArrowRightCircle className="h-6 w-6"/> </button>
-</span>
-      {/* Algorithm Section */}
-{currentModalSec==1?<div>
-  <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-1">
-    Algorithm
-  </h3>
-  <h4 className="text-md font-medium text-neutral-700 dark:text-neutral-200">
-    {active.algoTitle}
-  </h4>
-  <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-    {active.algoSteps}
-  </p>
-</div>:null}
+            {/* Modal Content */}
+            <motion.div
+              layoutId={`card-${active.title}-${id}`}
+              ref={ref}
+              className="w-full max-w-[500px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[90vh]"
+            >
+              <span className="flex justify-between gap-2">
+                <button disabled={currentModalSec == 1} onClick={() => setCurrentModalSec(1)}><ArrowLeftCircle className="h-6 w-6  " /></button>
+                <button disabled={currentModalSec == 2} onClick={() => setCurrentModalSec(2)}><ArrowRightCircle className="h-6 w-6" /> </button>
+              </span>
+              {/* Algorithm Section */}
+              {currentModalSec == 1 ? <div>
+                <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-1">
+                  Algorithm
+                </h3>
+                <h4 className="text-md font-medium text-neutral-700 dark:text-neutral-200">
+                  {active.algoTitle}
+                </h4>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                  {active.algoSteps}
+                </p>
+              </div> : null}
 
 
-      {/* Metaphor Section */}
-     {currentModalSec==2 ? <div>
-        <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-1">
-          Metaphor
-        </h3>
-        <motion.h4
-          layoutId={`title-${active.title}-${id}`}
-          className="text-md font-medium text-neutral-700 dark:text-neutral-200"
-        >
-          {active.metaphorName}
-        </motion.h4>
-        <motion.p
-          layoutId={`description-${active.description}-${id}`}
-          className="text-sm text-neutral-600 dark:text-neutral-400 mt-1"
-        >
-          {active.metaphorDesc}
-        </motion.p>
-      </div> : null}
+              {/* Metaphor Section */}
+              {currentModalSec == 2 ? <div>
+                <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-1">
+                  Metaphor
+                </h3>
+                <motion.h4
+                  layoutId={`title-${active.title}-${id}`}
+                  className="text-md font-medium text-neutral-700 dark:text-neutral-200"
+                >
+                  {active.metaphorName}
+                </motion.h4>
+                <motion.p
+                  layoutId={`description-${active.description}-${id}`}
+                  className="text-sm text-neutral-600 dark:text-neutral-400 mt-1"
+                >
+                  {active.metaphorDesc}
+                </motion.p>
+              </div> : null}
 
-      {/* Regenerate and Delete Button */}
-      <div className="flex gap-2">
+              {/* Regenerate and Delete Button */}
+              <div className="flex gap-2">
 
-      <motion.a
-        layoutId={`button-${active.title}-${id}`}
-        href={active.ctaLink}
-        target="_blank"
-        className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
-        >
-        Regenerate
-      </motion.a>
-      <motion.a
-        layoutId={`button-${active.title}-${id}`}
-        href={active.ctaLink}
-        target="_blank"
-        className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
-      >
-        Delete
-      </motion.a>
-        </div>
-    </motion.div>
-  </div>
-) : null}
+                <motion.a
+                  layoutId={`button-${active.title}-${id}`}
+                  href={active.ctaLink}
+                  target="_blank"
+                  className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
+                >
+                  Regenerate
+                </motion.a>
+                <motion.a
+                  layoutId={`button-${active.title}-${id}`}
+                  href={active.ctaLink}
+                  target="_blank"
+                  className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
+                >
+                  Delete
+                </motion.a>
+              </div>
+            </motion.div>
+          </div>
+        ) : null}
 
       </AnimatePresence>
       <ul className="max-w-2xl mx-auto w-full gap-14">
@@ -176,45 +176,45 @@ export default function ExpandableCardDemo({metaphorContent}:{
         ))} */}
         {metaphorContent.map((card, index) => (
           <motion.div
-          key={card._id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.1 }}
-          whileHover={{ y: -5 }}
-          className="group my-4"
-          onClick={()=>setActive(card)}
-        >
-          <Card className="h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-            <CardContent className="p-6 space-y-4">
-              <div className="flex items-start justify-between">
-               <div className="flex items-center gap-4">
-  <img src={card.src} alt="" className="h-16 w-20 rounded-md object-cover" />
-  <div>
-    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600">
-      {card.algoTitle}
-    </h3>
-    <Badge
-      variant="secondary"
-      className="mt-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-    >
-      Machine Learning
-    </Badge>
-  </div>
-</div>
+            key={card._id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{ y: -5 }}
+            className="group my-4"
+            onClick={() => setActive(card)}
+          >
+            <Card className="h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                    <img src={card.src} alt="" className="h-16 w-20 rounded-md object-cover" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600">
+                        {card.algoTitle}
+                      </h3>
+                      <Badge
+                        variant="secondary"
+                        className="mt-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                      >
+                        Machine Learning
+                      </Badge>
+                    </div>
+                  </div>
 
-              </div>
-
-              <div className="space-y-3">
-                <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-lg border border-blue-100 dark:border-blue-800/30">
-                  <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Metaphor:</p>
-                  <p className="text-blue-700 dark:text-blue-200 font-medium">{card.metaphorName}</p>
                 </div>
 
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{card.metaphorDesc}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                <div className="space-y-3">
+                  <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-lg border border-blue-100 dark:border-blue-800/30">
+                    <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Metaphor:</p>
+                    <p className="text-blue-700 dark:text-blue-200 font-medium">{card.metaphorName}</p>
+                  </div>
+
+                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{card.metaphorDesc}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </ul>
     </>
@@ -281,7 +281,7 @@ const cards = [
   {
     description: "Babbu Maan",
     title: "Mitran Di Chhatri",
-    metaphor:"",
+    metaphor: "",
     src: "https://assets.aceternity.com/demos/babbu-maan.jpeg",
     ctaText: "Play",
     ctaLink: "https://ui.aceternity.com/templates",

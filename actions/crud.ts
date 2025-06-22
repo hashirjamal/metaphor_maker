@@ -2,34 +2,33 @@
 import { connectToDatabase } from '@/lib/mongoose';  // your connection util
 import { MetaphorModel } from '@/model';          // your model
 
-export async function saveMetaphorInDb(payload:Content) {
+export async function saveMetaphorInDb(payload: Content) {
 
-  try{
-
+  try {
     await connectToDatabase();  // ensures DB connection
     const newMetaphor = new MetaphorModel(
       {
         ...payload
       }
-    ) 
+    )
     await newMetaphor.save()
-
   }
-  catch(e){
+  catch (e) {
     console.log(e)
   }
 }
 
 
-export async function getMetaphorsOfUser(userId:string){
-  try{
+export async function getMetaphorsOfUser(userId: string | undefined) {
+  try {
+    if (!userId) return
     await connectToDatabase()
-    const metaphors = await MetaphorModel.find().lean()
+    const metaphors = await MetaphorModel.find({ userId }).lean()
     console.log(metaphors)
     return metaphors
   }
-  catch(e){
-
+  catch (e) {
+    console.log(e)
   }
 }
 

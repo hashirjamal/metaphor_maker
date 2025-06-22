@@ -2,7 +2,7 @@
 
 import ExpandableCardDemo from "@/components/expandable-card-demo-standard"
 import { PlusIcon, Sparkles } from "lucide-react"
-import { SetStateAction, useEffect, useState, useTransition } from "react"
+import { useEffect, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -14,44 +14,48 @@ import {
 import { motion } from "motion/react"
 import { handleAgent } from "@/actions/agentRunner"
 import { getMetaphorsOfUser } from "@/actions/crud"
+import { useUser } from "@clerk/nextjs"
 
 function Page() {
   const [searchValue, setSearchValue] = useState("")
   const [dialogInput, setDialogInput] = useState("")
-  const [isPending,startTransition] = useTransition()
-  const [data,setData] = useState<any>(metaphorContent)
+  const [data, setData] = useState<any>(metaphorContent)
+
+  const user = useUser()?.user
+
+  console.log(user)
 
 
-  useEffect(()=>{
-    const get = async()=>{
-      const res = await getMetaphorsOfUser("abc123")
+  useEffect(() => {
+    const get = async () => {
+      const res = await getMetaphorsOfUser(user?.id)
       console.log(res)
-      if(!res) return
-      const dt = res?.map((v)=>{
-        return { 
-            _id:v._id,
-  algoTitle:v.algoTitle,
-  algoSteps:v.algoSteps,
-  metaphorName:v.metaphorName,
-  metaphorDesc:v.metaphorDesc,
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
-  userId:v.userId,
+      if (!res) return
+      const dt = res?.map((v) => {
+        return {
+          _id: v._id,
+          algoTitle: v.algoTitle,
+          algoSteps: v.algoSteps,
+          metaphorName: v.metaphorName,
+          metaphorDesc: v.metaphorDesc,
+          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+          userId: v.userId,
         }
       })
       setData(dt)
     }
     get()
-  },[])
+  }, [])
 
-  const handleSubmit = async (userPrompt:string)=>{
-   console.log("Submitting")
-   setDialogInput("")
-  const res = await handleAgent(userPrompt)
-  if(!res) return
-  setData((p: any)=>[res,...p])
+  const handleSubmit = async (userPrompt: string) => {
+    console.log("Submitting")
+    setDialogInput("")
+    const res = await handleAgent(userPrompt, user?.id)
+    if (!res) return
+    setData((p: any) => [res, ...p])
   }
 
-  
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors duration-300">
@@ -132,7 +136,7 @@ function Page() {
                     whileTap={{ scale: 0.98 }}
                     className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!dialogInput.trim()}
-                    onClick={()=>handleSubmit(dialogInput)}
+                    onClick={() => handleSubmit(dialogInput)}
                   >
                     <span className="flex items-center justify-center gap-2">
                       <Sparkles className="w-4 h-4" />
@@ -151,7 +155,7 @@ function Page() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <ExpandableCardDemo metaphorContent={data}/>
+          <ExpandableCardDemo metaphorContent={data} />
         </motion.div>
       </div>
     </div>
@@ -160,32 +164,32 @@ function Page() {
 
 export default Page
 
-const metaphorContent:Content[] = [
+const metaphorContent: Content[] = [
   {
-    _id:"1",
-  algoTitle:"Bubble Sort",
-  algoSteps:"Step1 Sort array, shift left, find max",
-  metaphorName: "Bucket of Water",
-  metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
-  userId:""
-},
+    _id: "1",
+    algoTitle: "Bubble Sort",
+    algoSteps: "Step1 Sort array, shift left, find max",
+    metaphorName: "Bucket of Water",
+    metaphorDesc: "Imagine you have a bucket of water it has many balls...",
+    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+    userId: ""
+  },
   {
-    _id:"2",
-  algoTitle:"Bubble Sort",
-  algoSteps:"Step1 Sort array, shift left, find max",
-  metaphorName: "Bucket of Water",
-  metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
-  userId:""
-},
+    _id: "2",
+    algoTitle: "Bubble Sort",
+    algoSteps: "Step1 Sort array, shift left, find max",
+    metaphorName: "Bucket of Water",
+    metaphorDesc: "Imagine you have a bucket of water it has many balls...",
+    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+    userId: ""
+  },
   {
-    _id:"3",
-  algoTitle:"Bubble Sort",
-  algoSteps:"Step1 Sort array, shift left, find max",
-  metaphorName: "Bucket of Water",
-  metaphorDesc:"Imagine you have a bucket of water it has many balls...",
-  src:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
-  userId:""
-},
+    _id: "3",
+    algoTitle: "Bubble Sort",
+    algoSteps: "Step1 Sort array, shift left, find max",
+    metaphorName: "Bucket of Water",
+    metaphorDesc: "Imagine you have a bucket of water it has many balls...",
+    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+    userId: ""
+  },
 ]
