@@ -24,7 +24,6 @@ export async function getMetaphorsOfUser(userId: string | undefined) {
     if (!userId) return
     await connectToDatabase()
     const metaphors = await MetaphorModel.find({ userId }).lean()
-    console.log(metaphors)
     return metaphors
   }
   catch (e) {

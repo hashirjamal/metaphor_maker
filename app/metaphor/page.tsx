@@ -19,17 +19,15 @@ import { useUser } from "@clerk/nextjs"
 function Page() {
   const [searchValue, setSearchValue] = useState("")
   const [dialogInput, setDialogInput] = useState("")
-  const [data, setData] = useState<any>(metaphorContent)
+  const [data, setData] = useState<any>([])
 
   const user = useUser()?.user
 
-  console.log(user)
 
 
   useEffect(() => {
     const get = async () => {
       const res = await getMetaphorsOfUser(user?.id)
-      console.log(res)
       if (!res) return
       const dt = res?.map((v) => {
         return {
@@ -45,7 +43,7 @@ function Page() {
       setData(dt)
     }
     get()
-  }, [])
+  }, [user])
 
   const handleSubmit = async (userPrompt: string) => {
     console.log("Submitting")
