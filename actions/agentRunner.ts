@@ -1,7 +1,10 @@
 "use server"
 
-import { generateAlgoProfile, generateMetaphor } from "../lib/ai_agent"
+import { uploadBufferToCloudinary } from "@/lib/saveImage";
+import { generateAlgoProfile, generateImageFromAlgorithmMetaphor, generateMetaphor } from "../lib/ai_agent"
 import { saveMetaphorInDb } from "./crud"
+import { generateImage } from "./imageGen"
+import fs from 'fs';
 
 export const handleAgent = async (userPrompt: string, userId: string | null | undefined): Promise<Content | undefined> => {
    try {
@@ -9,12 +12,23 @@ export const handleAgent = async (userPrompt: string, userId: string | null | un
       console.log("Running agent")
       const algoProfile = await generateAlgoProfile({ userPrompt })
       const metaphorContent = await generateMetaphor({ algoProfile })
+      // const imgUrl = await generateImageFromAlgorithmMetaphor({
+      //    algorithmName: metaphorContent.algorithm.name,
+      //    metaphorDescription: metaphorContent.metaphor.desc
+      // })
+
+      let base64Data = await generateImage(metaphorContent.metaphor.name)
+
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      const imgUrl = await uploadBufferToCloudinary(buffer)
+      console.log(imgUrl)
       let metaphorObj: Content = {
          algoTitle: metaphorContent.algorithm.name,
          algoSteps: metaphorContent.algorithm.steps,
          metaphorName: metaphorContent.metaphor.name,
          metaphorDesc: metaphorContent.metaphor.desc,
-         src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+         src: imgUrl,
          userId
 
       }
