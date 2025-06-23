@@ -9,7 +9,7 @@ declare global {
 }
 
 const MONGODB_URI = process.env.MONGO_DB_CONN!;
-console.log(process.env)
+
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGO_DB_CONN environment variable in .env.local');

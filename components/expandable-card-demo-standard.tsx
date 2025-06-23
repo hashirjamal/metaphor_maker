@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { ArrowLeftCircle, ArrowRightCircle, MoveLeftIcon, MoveRightIcon, XIcon } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
-import { Badge } from "./ui/badge";
+
 
 export default function ExpandableCardDemo({ metaphorContent }: {
   metaphorContent: Content[]
@@ -112,7 +112,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
               <div className="flex gap-2">
 
                 <motion.a
-                  layoutId={`button-${active.title}-${id}`}
+                  layoutId={`regenerate-button-${active.title}-${id}`}
                   href={active.ctaLink}
                   target="_blank"
                   className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
@@ -120,7 +120,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
                   Regenerate
                 </motion.a>
                 <motion.a
-                  layoutId={`button-${active.title}-${id}`}
+                  layoutId={`delete-button-${active.title}-${id}`}
                   href={active.ctaLink}
                   target="_blank"
                   className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
@@ -134,46 +134,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
 
       </AnimatePresence>
       <ul className="max-w-2xl mx-auto w-full gap-14">
-        {/* {cards.map((card, index) => (
-          <motion.div
-            layoutId={`card-${card.title}-${id}`}
-            key={`card-${card.title}-${id}`}
-            onClick={() => setActive(card)}
-            className="p-4 flex flex-col md:flex-row justify-between items-center hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer"
-          >
-            <div className="flex gap-4 flex-col md:flex-row ">
-              <motion.div layoutId={`image-${card.title}-${id}`}>
-                <img
-                  width={100}
-                  height={100}
-                  src={card.src}
-                  alt={card.title}
-                  className="h-40 w-40 md:h-14 md:w-14 rounded-lg object-cover object-top"
-                />
-              </motion.div>
-              <div className="">
-                <motion.h3
-                  layoutId={`title-${card.title}-${id}`}
-                  className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left"
-                >
-                  {card.title}
-                </motion.h3>
-                <motion.p
-                  layoutId={`description-${card.description}-${id}`}
-                  className="text-neutral-600 dark:text-neutral-400 text-center md:text-left"
-                >
-                  {card.description}
-                </motion.p>
-              </div>
-            </div>
-            <motion.button
-              layoutId={`button-${card.title}-${id}`}
-              className="px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0"
-            >
-              {card.ctaText}
-            </motion.button>
-          </motion.div>
-        ))} */}
+
         {metaphorContent.map((card, index) => (
           <motion.div
             key={card._id}
@@ -193,12 +154,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
                       <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600">
                         {card.algoTitle}
                       </h3>
-                      <Badge
-                        variant="secondary"
-                        className="mt-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-                      >
-                        Machine Learning
-                      </Badge>
+
                     </div>
                   </div>
 
