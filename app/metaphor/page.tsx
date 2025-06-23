@@ -29,19 +29,22 @@ function Page() {
     const get = async () => {
       const res = await getMetaphorsOfUser(user?.id)
       if (!res) return
-      const dt = res?.map((v) => {
+      let dt = res?.map((v) => {
         return {
           _id: v._id,
           algoTitle: v.algoTitle,
           algoSteps: v.algoSteps,
           metaphorName: v.metaphorName,
           metaphorDesc: v.metaphorDesc,
-          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
+          src: v.src,
           userId: v.userId,
+          createdAt: v.createdAt
         }
       })
+      dt = dt.sort((a: any, b: any) => Number(b.createdAt > a.createdAt) - 1) //  sorting in descending order of date 
       setData(dt)
     }
+
     get()
   }, [user])
 
