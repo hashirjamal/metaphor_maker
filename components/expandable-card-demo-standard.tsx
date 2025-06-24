@@ -142,7 +142,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             whileHover={{ y: -5 }}
-            className="group my-4"
+            className="group my-4 cursor-pointer"
             onClick={() => setActive(card)}
           >
             <Card className="h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">

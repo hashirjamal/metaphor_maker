@@ -5,6 +5,7 @@ import { PlusIcon, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -15,6 +16,7 @@ import { motion } from "motion/react"
 import { handleAgent } from "@/actions/agentRunner"
 import { getMetaphorsOfUser } from "@/actions/crud"
 import { useUser } from "@clerk/nextjs"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 function Page() {
   const [searchValue, setSearchValue] = useState("")
@@ -25,37 +27,49 @@ function Page() {
 
 
 
-  useEffect(() => {
-    const get = async () => {
-      const res = await getMetaphorsOfUser(user?.id)
-      if (!res) return
-      let dt = res?.map((v) => {
-        return {
-          _id: v._id,
-          algoTitle: v.algoTitle,
-          algoSteps: v.algoSteps,
-          metaphorName: v.metaphorName,
-          metaphorDesc: v.metaphorDesc,
-          src: v.src,
-          userId: v.userId,
-          createdAt: v.createdAt
-        }
-      })
-      dt = dt.sort((a: any, b: any) => Number(b.createdAt > a.createdAt) - 1) //  sorting in descending order of date 
-      setData(dt)
-    }
+  const get = async (): Promise<Content[]> => {
+    const res = await getMetaphorsOfUser(user?.id)
+    if (!res) throw new Error("Something went wrong")
+    let dt = res?.map((v) => {
+      return {
+        _id: v._id,
+        algoTitle: v.algoTitle,
+        algoSteps: v.algoSteps,
+        metaphorName: v.metaphorName,
+        metaphorDesc: v.metaphorDesc,
+        src: v.src,
+        userId: v.userId,
+        createdAt: v.createdAt
+      }
+    })
+    dt = dt.sort((a: any, b: any) => Number(b.createdAt > a.createdAt) - 1) //  sorting in descending order of date 
 
-    get()
-  }, [user])
-
-  const handleSubmit = async (userPrompt: string) => {
-    console.log("Submitting")
-    setDialogInput("")
-    const res = await handleAgent(userPrompt, user?.id)
-    if (!res) return
-    setData((p: any) => [res, ...p])
+    return dt
   }
 
+  const queryClient = useQueryClient()
+
+  const query = useQuery({
+    queryKey: ['metaphors'],
+    queryFn: get
+  })
+
+
+
+  const {
+    mutate,
+    data: mutationData,
+    isPending
+  } = useMutation({
+    mutationFn: async (userPrompt: string) => await handleAgent(userPrompt, user?.id)
+    ,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ['metaphors']
+      })
+    }
+  }
+  )
 
 
   return (
@@ -131,19 +145,21 @@ function Page() {
                       rows={4}
                     />
                   </div>
+                  <DialogClose asChild>
 
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!dialogInput.trim()}
-                    onClick={() => handleSubmit(dialogInput)}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Generate Metaphor Card
-                    </span>
-                  </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={!dialogInput.trim()}
+                      onClick={() => mutate(dialogInput)}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <Sparkles className="w-4 h-4" />
+                        Generate Metaphor Card
+                      </span>
+                    </motion.button>
+                  </DialogClose>
                 </div>
               </DialogContent>
             </Dialog>
@@ -156,7 +172,8 @@ function Page() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <ExpandableCardDemo metaphorContent={data} />
+          {isPending && <p>Generating new metaphor for you...</p>}
+          {query.data && <ExpandableCardDemo metaphorContent={query?.data} />}
         </motion.div>
       </div>
     </div>
