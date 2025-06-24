@@ -23,9 +23,10 @@ export const generateImage = async (metaphorName: string) => {
 
         const data = await response.json();
         console.log("Response:", data);
+        if (!data.success) throw new Error("Error while generating image")
         return data?.result?.image;
     } catch (error) {
         console.error("Error:", error);
-        return null; // or throw error if you want to handle it upstream
+        throw new Error(error instanceof Error ? error.message : "Something went wrong while generating image"); // or throw error if you want to handle it upstream
     }
 };

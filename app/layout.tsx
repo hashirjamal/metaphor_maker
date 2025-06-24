@@ -14,6 +14,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import ReactQueryProvider from '@/components/provider/ReactQueryProvider'
+import Link from 'next/link'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -45,14 +46,20 @@ export default function RootLayout({
 
 
           <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-            <header className="flex justify-end items-center p-4 gap-4 h-16 bg-transparent">
-              <SignedOut>
-                <SignInButton />
-                <SignUpButton />
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
+            <header className="flex  justify-between items-center p-4  h-16 bg-transparent">
+              <Link href={"/"} className='text-xl font-bold'>
+                Metaphor maker
+              </Link>
+              <div className='flex flex-1 justify-end gap-4'>
+
+                <SignedOut>
+                  <SignInButton />
+                  <SignUpButton />
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </div>
             </header>
             {children}
           </body>

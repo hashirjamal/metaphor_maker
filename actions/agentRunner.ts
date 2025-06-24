@@ -16,7 +16,7 @@ export const handleAgent = async (userPrompt: string, userId: string | null | un
       //    algorithmName: metaphorContent.algorithm.name,
       //    metaphorDescription: metaphorContent.metaphor.desc
       // })
-
+      console.log(metaphorContent)
       let base64Data = await generateImage(metaphorContent.metaphor.name)
 
       const buffer = Buffer.from(base64Data, 'base64');
@@ -47,7 +47,7 @@ export const handleAgent = async (userPrompt: string, userId: string | null | un
 
 
    } catch (e) {
-      console.log(e)
+      console.log(e, "Error in agent runner")
    }
 }
 

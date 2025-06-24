@@ -17,7 +17,7 @@ const profileSchema = z.object({
   category: z.string().describe("The Category which the algorithm belongs to"),
   core_principle: z.string().describe("Fundamental Principles of Algorithm"),
   data_structure: z.string().describe("Data Structure that is being used in the algorithm"),
-  key_actions: z.string().describe("Key Steps being performed in the algorithm"),
+  key_actions: z.string().describe("Detailed Steps of the algorithm"),
   complexity_feel: z.string().describe("Complexity Feel of the Algorithm"),
   analogy_keywords: z.string().describe("Keywords to remember for analogy of algorithm")
 })

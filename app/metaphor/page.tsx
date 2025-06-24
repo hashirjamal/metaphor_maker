@@ -17,6 +17,7 @@ import { handleAgent } from "@/actions/agentRunner"
 import { getMetaphorsOfUser } from "@/actions/crud"
 import { useUser } from "@clerk/nextjs"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { CardSkeleton } from "@/components/composites/SkeletonCard"
 
 function Page() {
   const [searchValue, setSearchValue] = useState("")
@@ -68,6 +69,7 @@ function Page() {
     mutationFn: async (userPrompt: string) => await handleAgent(userPrompt, user?.id)
     ,
     onSuccess: async () => {
+      setDialogInput("")
       queryClient.invalidateQueries({
         queryKey: ['metaphors']
       })
@@ -185,9 +187,9 @@ function Page() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          {isPending && <p>Generating new metaphor for you...</p>}
+          {isPending && <CardSkeleton />}
           {query.data ? <ExpandableCardDemo metaphorContent={data} /> :
-            <p>No Metaphors to display...</p>
+            <p className="text-center">No Metaphors to display...</p>
           }
         </motion.div>
       </div>
@@ -197,32 +199,3 @@ function Page() {
 
 export default Page
 
-const metaphorContent: Content[] = [
-  {
-    _id: "1",
-    algoTitle: "Bubble Sort",
-    algoSteps: "Step1 Sort array, shift left, find max",
-    metaphorName: "Bucket of Water",
-    metaphorDesc: "Imagine you have a bucket of water it has many balls...",
-    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
-    userId: ""
-  },
-  {
-    _id: "2",
-    algoTitle: "Bubble Sort",
-    algoSteps: "Step1 Sort array, shift left, find max",
-    metaphorName: "Bucket of Water",
-    metaphorDesc: "Imagine you have a bucket of water it has many balls...",
-    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
-    userId: ""
-  },
-  {
-    _id: "3",
-    algoTitle: "Bubble Sort",
-    algoSteps: "Step1 Sort array, shift left, find max",
-    metaphorName: "Bucket of Water",
-    metaphorDesc: "Imagine you have a bucket of water it has many balls...",
-    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuLyGp6AP-CnvQ30G3T6nRAuD4xxpZSvcUFw&s",
-    userId: ""
-  },
-]
