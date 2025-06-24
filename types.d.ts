@@ -1,11 +1,11 @@
 type Content = {
-  algoTitle:string
-  algoSteps:string
-  metaphorName:string
-  metaphorDesc:string
-  src:string
-  userId:string
-  _id?:string // mongo db will add it later
+  algoTitle: string
+  algoSteps: string
+  metaphorName: string
+  metaphorDesc: string
+  src: string
+  userId: string
+  _id?: string // mongo db will add it later
 }
 
 interface IContent extends Document {
@@ -18,3 +18,8 @@ interface IContent extends Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
+type UpdatePayload = {
+  algoTitle: string;
+  metaphorName: string;
+  objectId: string;
+};

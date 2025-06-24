@@ -5,6 +5,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { ArrowLeftCircle, ArrowRightCircle, MoveLeftIcon, MoveRightIcon, XIcon } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
+import { handleAgent } from "@/actions/agentRunner";
+
+import { useUser } from "@clerk/nextjs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteInDb } from "@/actions/crud";
 
 
 export default function ExpandableCardDemo({ metaphorContent }: {
@@ -17,6 +22,52 @@ export default function ExpandableCardDemo({ metaphorContent }: {
   const [currentModalSec, setCurrentModalSec] = useState<Number>(1)
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
+
+  const user = useUser()?.user
+
+  const queryClient = useQueryClient()
+
+  const handleRegenerate = async ({ algoTitle, metaphorName, objectId }: UpdatePayload) => {
+    console.log(`Previosuly you made the metaphor named ${metaphorName} for ${algoTitle} so regenerate it`)
+    const regenPrompt = `Previosuly you made the metaphor named ${metaphorName} for ${algoTitle} so regenerate it`
+    await handleAgent(regenPrompt, user?.id, objectId)
+  }
+
+  const { mutate: regenMutation, isPending: isRegenerating, isError: regenError } = useMutation({
+    mutationFn: handleRegenerate,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ['metaphors']
+      })
+      setActive(null)
+    },
+    onError: async (e) => {
+      console.log(e)
+
+    }
+  })
+
+
+  const {
+    mutate: handleDelete,
+    isPending,
+    isError
+  } = useMutation({
+    mutationFn: async (objectId: string) => {
+      await deleteInDb(objectId)
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ['metaphors']
+      })
+      setActive(null)
+
+    },
+    onError: async (e) => {
+      console.log(e)
+
+    }
+  })
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -75,6 +126,10 @@ export default function ExpandableCardDemo({ metaphorContent }: {
                 <button disabled={currentModalSec == 1} onClick={() => setCurrentModalSec(1)}><ArrowLeftCircle className="h-6 w-6  " /></button>
                 <button disabled={currentModalSec == 2} onClick={() => setCurrentModalSec(2)}><ArrowRightCircle className="h-6 w-6" /> </button>
               </span>
+              {isPending && <p>Deleting this metaphor...</p>}
+              {isError && <p>Error while deleting this metaphor...</p>}
+              {isRegenerating && <p>Regenerating metaphor...</p>}
+              {regenError && <p>Error while regenerating metaphor...</p>}
               {/* Algorithm Section */}
               {currentModalSec == 1 ? <div>
                 <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-1">
@@ -113,17 +168,17 @@ export default function ExpandableCardDemo({ metaphorContent }: {
 
                 <motion.a
                   layoutId={`regenerate-button-${active.title}-${id}`}
-                  href={active.ctaLink}
+                  onClick={() => regenMutation({ algoTitle: active.algoTitle, metaphorName: active.metaphorName, objectId: active._id })}
                   target="_blank"
-                  className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
+                  className="self-start mt-2 cursor-pointer inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
                 >
                   Regenerate
                 </motion.a>
                 <motion.a
                   layoutId={`delete-button-${active.title}-${id}`}
-                  href={active.ctaLink}
+                  onClick={() => handleDelete(active._id)}
                   target="_blank"
-                  className="self-start mt-2 inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
+                  className="self-start mt-2 cursor-pointer inline-block px-5 py-2 text-sm font-semibold rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black hover:bg-gray-700 dark:hover:bg-gray-300 transition"
                 >
                   Delete
                 </motion.a>
@@ -142,7 +197,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             whileHover={{ y: -5 }}
-            className="group my-4 cursor-pointer"
+            className="group my-4 cursor-pointercursor-pointer "
             onClick={() => setActive(card)}
           >
             <Card className="h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">

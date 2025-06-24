@@ -47,6 +47,7 @@ function Page() {
     return dt
   }
 
+
   const queryClient = useQueryClient()
 
   const query = useQuery({
@@ -54,6 +55,9 @@ function Page() {
     queryFn: get
   })
 
+  useEffect(() => {
+    setData(query?.data)
+  }, [query?.data])
 
 
   const {
@@ -71,6 +75,15 @@ function Page() {
   }
   )
 
+  const handleSearch = (searchStr: string) => {
+    setSearchValue(searchStr);
+
+    const filtered = query?.data?.filter((v, i) => {
+      return v.algoTitle.toLowerCase().includes(searchStr.toLowerCase()) || v.metaphorName.toLowerCase().includes(searchStr.toLowerCase())
+    })
+    setData(filtered)
+
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 transition-colors duration-300">
@@ -106,7 +119,7 @@ function Page() {
             <input
               type="text"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
               className="flex-1 bg-transparent text-slate-800 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 px-4 py-3 focus:outline-none text-lg"
               placeholder="Search your metaphor cards..."
             />
@@ -173,7 +186,9 @@ function Page() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           {isPending && <p>Generating new metaphor for you...</p>}
-          {query.data && <ExpandableCardDemo metaphorContent={query?.data} />}
+          {query.data ? <ExpandableCardDemo metaphorContent={data} /> :
+            <p>No Metaphors to display...</p>
+          }
         </motion.div>
       </div>
     </div>

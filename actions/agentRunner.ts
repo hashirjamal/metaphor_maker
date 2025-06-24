@@ -2,11 +2,11 @@
 
 import { uploadBufferToCloudinary } from "@/lib/saveImage";
 import { generateAlgoProfile, generateImageFromAlgorithmMetaphor, generateMetaphor } from "../lib/ai_agent"
-import { saveMetaphorInDb } from "./crud"
+import { saveMetaphorInDb, updateMetaphorInDb } from "./crud"
 import { generateImage } from "./imageGen"
 import fs from 'fs';
 
-export const handleAgent = async (userPrompt: string, userId: string | null | undefined): Promise<Content | undefined> => {
+export const handleAgent = async (userPrompt: string, userId: string | null | undefined, objectId: string | null = null): Promise<Content | undefined> => {
    try {
       if (!userId) return
       console.log("Running agent")
@@ -33,8 +33,13 @@ export const handleAgent = async (userPrompt: string, userId: string | null | un
 
       }
 
+      if (objectId) {
+         updateMetaphorInDb(metaphorObj, objectId)
+      }
+      else {
+         await saveMetaphorInDb(metaphorObj)
+      }
 
-      await saveMetaphorInDb(metaphorObj)
       return {
          ...metaphorObj
       }

@@ -17,6 +17,30 @@ export async function saveMetaphorInDb(payload: Content) {
     console.log(e)
   }
 }
+export async function updateMetaphorInDb(payload: Content, _id: string) {
+  try {
+    await connectToDatabase(); // ensures DB connection
+
+    await MetaphorModel.findByIdAndUpdate(
+      _id,
+      { ...payload }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+}
+export async function deleteInDb(_id: string) {
+  try {
+    await connectToDatabase(); // ensures DB connection
+
+    await MetaphorModel.deleteOne({
+      _id
+    })
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 
 
 export async function getMetaphorsOfUser(userId: string | undefined) {
