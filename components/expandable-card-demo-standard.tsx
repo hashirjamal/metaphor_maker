@@ -71,6 +71,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
   })
 
   useEffect(() => {
+    console.log(metaphorContent)
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setActive(false);
@@ -192,43 +193,46 @@ export default function ExpandableCardDemo({ metaphorContent }: {
       <ul className="max-w-2xl mx-auto w-full gap-14">
 
 
-        {metaphorContent?.map((card, index) => (
-          <motion.div
-            key={card._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            whileHover={{ y: -5 }}
-            className="group my-4 cursor-pointer "
-            onClick={() => setActive(card)}
-          >
-            <Card className="h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <img src={card.src} alt="" className="h-16 w-20 rounded-md object-cover" />
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600">
-                        {card.algoTitle}
-                      </h3>
+        {metaphorContent?.map((card, index) => {
+          if (!card) return
+          return (
+            <motion.div
+              key={card._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ y: -5 }}
+              className="group my-4 cursor-pointer "
+              onClick={() => setActive(card)}
+            >
+              <Card className="h-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <img src={card.src} alt="" className="h-16 w-20 rounded-md object-cover" />
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 group-hover:text-blue-600">
+                          {card.algoTitle}
+                        </h3>
 
+                      </div>
                     </div>
+
                   </div>
 
-                </div>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-lg border border-blue-100 dark:border-blue-800/30">
+                      <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Metaphor:</p>
+                      <p className="text-blue-700 dark:text-blue-200 font-medium">{card.metaphorName}</p>
+                    </div>
 
-                <div className="space-y-3">
-                  <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-lg border border-blue-100 dark:border-blue-800/30">
-                    <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Metaphor:</p>
-                    <p className="text-blue-700 dark:text-blue-200 font-medium">{card.metaphorName}</p>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{card.metaphorDesc}</p>
                   </div>
-
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{card.metaphorDesc}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )
+        })}
       </ul>
     </>
   );

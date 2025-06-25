@@ -1,5 +1,5 @@
 "use server"
-import { connectToDatabase } from '@/lib/mongoose';  // your connection util
+import { connectToDatabase } from '@/lib/mongooseConn';  // your connection util
 import { MetaphorModel } from '@/model';          // your model
 
 export async function saveMetaphorInDb(payload: Content) {
