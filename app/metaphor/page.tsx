@@ -29,8 +29,12 @@ function Page() {
 
 
 
+
+
+
   const get = async (): Promise<Content[]> => {
     const res = await getMetaphorsOfUser(user?.id)
+    // const res = await getMetaphorsOfUser(user?.id || sessionStorage.getItem("user") || undefined)
     if (!res) throw new Error("Something went wrong")
     let dt = res?.map((v) => {
       return {
@@ -62,6 +66,17 @@ function Page() {
   const checkLimitAndHandleAgent = async (userPrompt: string) => {
     let paywallCheck;
     // new logic : if user does not exist then check if theres a random uuid in session storage then send it as user id else create one and store there
+    //  if (user?.id) {
+    //     return await handleAgent(userPrompt, user?.id)
+
+    //   }
+    //   else {
+    //     let userInSession = sessionStorage.getItem("user")
+    //     if(!userInSession){
+    //       userInSession = randomUUID()
+    //       sessionStorage.setItem("user",userInSession)}
+    //     return await handleAgent(userPrompt,userInSession )
+    //   }
     if (user?.id) {
       paywallCheck = await checkRateLimit(user?.id)
     }
