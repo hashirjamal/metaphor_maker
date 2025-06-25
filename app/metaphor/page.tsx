@@ -18,6 +18,7 @@ import { getMetaphorsOfUser } from "@/actions/crud"
 import { useUser } from "@clerk/nextjs"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { CardSkeleton } from "@/components/composites/SkeletonCard"
+import { checkRateLimit } from "@/actions/rateLimit"
 
 function Page() {
   const [searchValue, setSearchValue] = useState("")
@@ -36,8 +37,8 @@ function Page() {
         _id: v._id,
         algoTitle: v.algoTitle,
         algoSteps: v.algoSteps,
-        metaphorName: v.metaphorName,
-        metaphorDesc: v.metaphorDesc,
+        metaphorName: v?.metaphorName,
+        metaphorDesc: v?.metaphorDesc,
         src: v.src,
         userId: v.userId,
         createdAt: v.createdAt
@@ -56,9 +57,24 @@ function Page() {
     queryFn: get
   })
 
-  useEffect(() => {
-    setData(query?.data)
-  }, [query?.data])
+
+
+  const checkLimitAndHandleAgent = async (userPrompt: string) => {
+    let paywallCheck;
+    // new logic : if user does not exist then check if theres a random uuid in session storage then send it as user id else create one and store there
+    if (user?.id) {
+      paywallCheck = await checkRateLimit(user?.id)
+    }
+    else {
+      let count = Number(sessionStorage.getItem("count")) || 0
+      paywallCheck = Number(sessionStorage.getItem("count")) < 5
+    }
+
+    if (!paywallCheck) throw new Error("You have reached your limit for today, please sign-in and try again after 12:00am ")
+    console.log("processing")
+    return await handleAgent(userPrompt, user?.id)
+
+  }
 
 
   const {
@@ -66,22 +82,47 @@ function Page() {
     data: mutationData,
     isPending
   } = useMutation({
-    mutationFn: async (userPrompt: string) => await handleAgent(userPrompt, user?.id)
+    mutationFn: async (userPrompt: string) => await checkLimitAndHandleAgent(userPrompt)
     ,
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      if (!user) {
+        const currentCount = Number(sessionStorage.getItem("count")) || 0
+        sessionStorage.setItem("count", String(currentCount + 1))
+      }
       setDialogInput("")
       queryClient.invalidateQueries({
         queryKey: ['metaphors']
       })
+    },
+    onError: async (e) => {
+      setDialogInput("")
+      console.log(e)
+      alert(e.message || "Limit reached")
     }
   }
   )
 
+  useEffect(() => {
+    if (user) {
+
+      console.log("1")
+      setData(query?.data)
+      console.log("2")
+    } else {
+      setData((p: any) => {
+        console.log(p)
+        if (p?.length) return [mutationData, ...p]
+        if (!mutationData) return []
+        return [mutationData]
+      })
+
+    }
+  }, [query?.data, mutationData])
   const handleSearch = (searchStr: string) => {
     setSearchValue(searchStr);
 
     const filtered = query?.data?.filter((v, i) => {
-      return v.algoTitle.toLowerCase().includes(searchStr.toLowerCase()) || v.metaphorName.toLowerCase().includes(searchStr.toLowerCase())
+      return v.algoTitle.toLowerCase().includes(searchStr.toLowerCase()) || v?.metaphorName.toLowerCase().includes(searchStr.toLowerCase())
     })
     setData(filtered)
 
@@ -154,6 +195,12 @@ function Page() {
                     </label>
                     <textarea
                       value={dialogInput}
+                      onKeyDown={(e) => {
+                        if (e.ctrlKey && e.key === "Enter" && dialogInput.trim()) {
+                          e.preventDefault(); // Prevents newline insertion
+                          mutate(dialogInput);
+                        }
+                      }}
                       onChange={(e) => setDialogInput(e.target.value)}
                       className="w-full min-h-[100px] p-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200 resize-none"
                       placeholder="e.g., Explain how neural networks learn patterns..."
@@ -189,7 +236,8 @@ function Page() {
         >
           {isPending && <CardSkeleton />}
           {query.data ? <ExpandableCardDemo metaphorContent={data} /> :
-            <p className="text-center">No Metaphors to display...</p>
+            mutationData ? <ExpandableCardDemo metaphorContent={data} /> :
+              <p className="text-center">No Metaphors to display...</p>
           }
         </motion.div>
       </div>
