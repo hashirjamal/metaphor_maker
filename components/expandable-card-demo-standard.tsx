@@ -10,6 +10,7 @@ import { handleAgent } from "@/actions/agentRunner";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteInDb } from "@/actions/crud";
+import { errorLog } from "@/lib/utils";
 
 
 
@@ -29,7 +30,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
   const queryClient = useQueryClient()
 
   const handleRegenerate = async ({ algoTitle, metaphorName, objectId }: UpdatePayload) => {
-    console.log(`Previosuly you made the metaphor named ${metaphorName} for ${algoTitle} so regenerate it`)
+
     const regenPrompt = `Previosuly you made the metaphor named ${metaphorName} for ${algoTitle} so regenerate it`
     await handleAgent(regenPrompt, user?.id, objectId)
   }
@@ -43,7 +44,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
       setActive(null)
     },
     onError: async (e) => {
-      console.log(e)
+      errorLog(e)
 
     }
   })
@@ -65,13 +66,13 @@ export default function ExpandableCardDemo({ metaphorContent }: {
 
     },
     onError: async (e) => {
-      console.log(e)
+      errorLog(e)
 
     }
   })
 
   useEffect(() => {
-    console.log(metaphorContent)
+
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setActive(false);
@@ -122,7 +123,7 @@ export default function ExpandableCardDemo({ metaphorContent }: {
             <motion.div
               layoutId={`card-${active.title}-${id}`}
               ref={ref}
-              className="w-full max-w-[500px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[90vh]"
+              className="w-full max-w-[500px] bg-white dark:bg-slate-800  border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-6 flex flex-col gap-4 overflow-y-auto max-h-[90vh]"
             >
               <span className="flex justify-between gap-2">
                 <button disabled={currentModalSec == 1} onClick={() => setCurrentModalSec(1)}><ArrowLeftCircle className="h-6 w-6  " /></button>
