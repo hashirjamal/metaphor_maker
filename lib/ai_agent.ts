@@ -97,7 +97,7 @@ export const generateImageFromAlgorithmMetaphor = ai.defineFlow({
   async (input) => {
     const prompt = `Generate an image that represents the ${input.algorithmName} algorithm, described as: ${input.metaphorDescription}. ${input.styleDescription ? `The image should be ${input.styleDescription}.` : ""}`;
 
-    console.log(`Generating image for algorithm: ${input.algorithmName} with prompt: ${prompt}`);
+
 
     const response = await ai.generate({
       model: "gemini-2.0-flash-preview-image-generation",
@@ -109,14 +109,12 @@ export const generateImageFromAlgorithmMetaphor = ai.defineFlow({
     const imagePart = response.output;
     if (imagePart?.media?.url) {
       const parsed = parseDataURL(imagePart.media.url);
-      if (parsed) {
-        console.log(parsed)
-      }
+
     }
 
     // The image is returned as base64 encoded data, construct a data URL
     const imageUrl = `data:${imagePart.fileData.mimeType};base64,${imagePart.fileData.fileBytes}`;
-    console.log(imageUrl)
+
 
     return {
       imageUrl: imageUrl,

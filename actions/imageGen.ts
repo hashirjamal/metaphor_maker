@@ -22,7 +22,7 @@ export const generateImage = async (metaphorName: string) => {
         });
 
         const data = await response.json();
-        console.log("Response:", data);
+        console.log("Response received from image model");
         if (!data.success) throw new Error("Error while generating image")
         return data?.result?.image;
     } catch (error) {
