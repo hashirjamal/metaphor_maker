@@ -19,6 +19,9 @@ import { useUser } from "@clerk/nextjs"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { CardSkeleton } from "@/components/composites/SkeletonCard"
 import { checkRateLimit } from "@/actions/rateLimit"
+import { randomUUID } from "crypto"
+import { errorLog } from "@/lib/utils"
+
 
 function Page() {
   const [searchValue, setSearchValue] = useState("")
@@ -33,8 +36,8 @@ function Page() {
 
 
   const get = async (): Promise<Content[]> => {
-    const res = await getMetaphorsOfUser(user?.id)
-    // const res = await getMetaphorsOfUser(user?.id || sessionStorage.getItem("user") || undefined)
+    // const res = await getMetaphorsOfUser(user?.id)
+    const res = await getMetaphorsOfUser(user?.id || sessionStorage.getItem("user") || undefined)
     if (!res) throw new Error("Something went wrong")
     let dt = res?.map((v) => {
       return {
@@ -66,28 +69,21 @@ function Page() {
   const checkLimitAndHandleAgent = async (userPrompt: string) => {
     let paywallCheck;
     // new logic : if user does not exist then check if theres a random uuid in session storage then send it as user id else create one and store there
-    //  if (user?.id) {
-    //     return await handleAgent(userPrompt, user?.id)
-
-    //   }
-    //   else {
-    //     let userInSession = sessionStorage.getItem("user")
-    //     if(!userInSession){
-    //       userInSession = randomUUID()
-    //       sessionStorage.setItem("user",userInSession)}
-    //     return await handleAgent(userPrompt,userInSession )
-    //   }
     if (user?.id) {
-      paywallCheck = await checkRateLimit(user?.id)
+      if (!await checkRateLimit(user.id)) throw new Error("Daily Limit Reached")
+      return await handleAgent(userPrompt, user?.id)
+
     }
     else {
-      let count = Number(sessionStorage.getItem("count")) || 0
-      paywallCheck = Number(sessionStorage.getItem("count")) < 5
+      let userInSession = sessionStorage.getItem("user")
+      if (!userInSession) {
+        userInSession = crypto.randomUUID()
+        sessionStorage.setItem("user", userInSession)
+      } else {
+        if (!await checkRateLimit(userInSession)) throw new Error("Daily Limit Reached")
+      }
+      return await handleAgent(userPrompt, userInSession)
     }
-
-    if (!paywallCheck) throw new Error("You have reached your limit for today, please sign-in and try again after 12:00am ")
-    console.log("processing")
-    return await handleAgent(userPrompt, user?.id)
 
   }
 
@@ -111,28 +107,15 @@ function Page() {
     },
     onError: async (e) => {
       setDialogInput("")
-      console.log(e)
+      errorLog(e)
       alert(e.message || "Limit reached")
     }
   }
   )
 
   useEffect(() => {
-    if (user) {
-
-      console.log("1")
-      setData(query?.data)
-      console.log("2")
-    } else {
-      setData((p: any) => {
-        console.log(p)
-        if (p?.length) return [mutationData, ...p]
-        if (!mutationData) return []
-        return [mutationData]
-      })
-
-    }
-  }, [query?.data, mutationData])
+    setData(query?.data)
+  }, [query?.data])
   const handleSearch = (searchStr: string) => {
     setSearchValue(searchStr);
 
@@ -165,7 +148,7 @@ function Page() {
             Transform complex concepts into memorable metaphors with AI-powered learning cards
           </p>
         </motion.div>
-
+        {!user ? <p className="text-center my-4 text-gray-600">You are not logged in, your flashcards can not be saved</p> : null}
         {/* Search and Add Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -251,8 +234,8 @@ function Page() {
         >
           {isPending && <CardSkeleton />}
           {query.data ? <ExpandableCardDemo metaphorContent={data} /> :
-            mutationData ? <ExpandableCardDemo metaphorContent={data} /> :
-              <p className="text-center">No Metaphors to display...</p>
+
+            <p className="text-center">No Metaphors to display...</p>
           }
         </motion.div>
       </div>

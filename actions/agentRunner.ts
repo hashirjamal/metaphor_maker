@@ -5,27 +5,25 @@ import { generateAlgoProfile, generateImageFromAlgorithmMetaphor, generateMetaph
 import { saveMetaphorInDb, updateMetaphorInDb } from "./crud"
 import { generateImage } from "./imageGen"
 import { randomUUID } from "crypto";
+import { errorLog } from "@/lib/utils";
 
 
 export const handleAgent = async (userPrompt: string, userId: string | null | undefined, objectId: string | null = null): Promise<Content | undefined> => {
    try {
 
+      if (!userId) throw new Error("Authentication error")
       console.log("Running agent")
       const algoProfile = await generateAlgoProfile({ userPrompt })
       const metaphorContent = await generateMetaphor({ algoProfile })
-      // const imgUrl = await generateImageFromAlgorithmMetaphor({
-      //    algorithmName: metaphorContent.algorithm.name,
-      //    metaphorDescription: metaphorContent.metaphor.desc
-      // })
-      console.log(metaphorContent)
+
+
       let base64Data = await generateImage(metaphorContent.metaphor.name)
 
       const buffer = Buffer.from(base64Data, 'base64');
 
       const imgUrl = await uploadBufferToCloudinary(buffer)
-      console.log(imgUrl)
+
       let metaphorObj: Content = {
-         _id: randomUUID(),
          algoTitle: metaphorContent.algorithm.name,
          algoSteps: metaphorContent.algorithm.steps,
          metaphorName: metaphorContent.metaphor.name,
@@ -34,7 +32,6 @@ export const handleAgent = async (userPrompt: string, userId: string | null | un
          userId: userId || ""
 
       }
-      if (!userId) return metaphorObj
 
       if (objectId) {
          updateMetaphorInDb(metaphorObj, objectId)
@@ -50,7 +47,7 @@ export const handleAgent = async (userPrompt: string, userId: string | null | un
 
 
    } catch (e) {
-      console.log(e, "Error in agent runner")
+      errorLog(e)
    }
 }
 
