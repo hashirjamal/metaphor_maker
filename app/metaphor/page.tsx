@@ -21,6 +21,7 @@ import { CardSkeleton } from "@/components/composites/SkeletonCard"
 import { checkRateLimit } from "@/actions/rateLimit"
 import { randomUUID } from "crypto"
 import { errorLog } from "@/lib/utils"
+import { toast } from "sonner"
 
 
 function Page() {
@@ -96,10 +97,7 @@ function Page() {
     mutationFn: async (userPrompt: string) => await checkLimitAndHandleAgent(userPrompt)
     ,
     onSuccess: async (result) => {
-      if (!user) {
-        const currentCount = Number(sessionStorage.getItem("count")) || 0
-        sessionStorage.setItem("count", String(currentCount + 1))
-      }
+      toast("Metaphor generated successfully")
       setDialogInput("")
       queryClient.invalidateQueries({
         queryKey: ['metaphors']
@@ -108,7 +106,7 @@ function Page() {
     onError: async (e) => {
       setDialogInput("")
       errorLog(e)
-      alert(e.message || "Limit reached")
+      toast(e.message || "Limit reached")
     }
   }
   )

@@ -1,5 +1,6 @@
 "use server"
 import { connectToDatabase } from '@/lib/mongooseConn';  // your connection util
+import { errorLog } from '@/lib/utils';
 import { MetaphorModel } from '@/model';          // your model
 
 export async function saveMetaphorInDb(payload: Content) {
@@ -14,7 +15,7 @@ export async function saveMetaphorInDb(payload: Content) {
     await newMetaphor.save()
   }
   catch (e) {
-    console.log(e)
+    errorLog(e)
   }
 }
 export async function updateMetaphorInDb(payload: Content, _id: string) {
@@ -26,7 +27,7 @@ export async function updateMetaphorInDb(payload: Content, _id: string) {
       { ...payload }
     );
   } catch (e) {
-    console.log(e);
+    errorLog(e);
   }
 }
 export async function deleteInDb(_id: string) {
@@ -37,7 +38,7 @@ export async function deleteInDb(_id: string) {
       _id
     })
   } catch (e) {
-    console.log(e);
+    errorLog(e);
   }
 }
 
@@ -58,7 +59,7 @@ export async function getMetaphorsOfUser(userId: string | undefined) {
     return serialized
   }
   catch (e) {
-    console.log(e)
+    errorLog(e)
   }
 }
 

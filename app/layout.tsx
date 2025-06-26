@@ -15,6 +15,7 @@ import {
 } from '@tanstack/react-query'
 import ReactQueryProvider from '@/components/provider/ReactQueryProvider'
 import Link from 'next/link'
+import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -61,6 +62,7 @@ export default function RootLayout({
                 </SignedIn>
               </div>
             </header>
+            <Toaster />
             {children}
           </body>
 
